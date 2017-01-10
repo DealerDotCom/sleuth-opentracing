@@ -25,6 +25,8 @@
             <artifactId>spring-cloud-sleuth-core</artifactId>
             <version>${spring-cloud-sleuth.version}</version>
         </dependency>
+
+
     </dependencies>
 
 </project>
