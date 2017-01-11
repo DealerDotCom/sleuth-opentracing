@@ -1,38 +1,65 @@
 package io.opentracing.impl;
 
 import io.opentracing.SpanContext;
+import io.opentracing.Tracer;
+import io.opentracing.propagation.Format;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.sleuth.Span;
-import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
-
-/**
- * Created by ddcbdevins on 1/9/17.
- */
 @Component
-public class SleuthTracer extends AbstractTracer {
+public class SleuthTracer implements Tracer {
 
     @Autowired
-    private Tracer tracer;
+    private org.springframework.cloud.sleuth.Tracer tracer;
 
-    @Override
-    SleuthSpanBuilder createSpanBuilder(String operationName) {
+    public SpanBuilder buildSpan(String operationName) {
         return SleuthSpanBuilder.create(tracer, operationName);
     }
 
-    Map<String, Object> getTraceState(SpanContext spanContext) {
-        final SleuthSpanContext sc = (SleuthSpanContext) spanContext;
+    /**
+     * Inject a SpanContext into a `carrier` of a given type, presumably for propagation across process boundaries.
+     * <p>
+     * <p>Example:
+     * <pre>{@code
+     * Tracer tracer = ...
+     * Span clientSpan = ...
+     * TextMap httpHeadersCarrier = new AnHttpHeaderCarrier(httpRequest);
+     * tracer.inject(span.context(), Format.Builtin.HTTP_HEADERS, httpHeadersCarrier);
+     * }</pre>
+     *
+     * @param spanContext the SpanContext instance to inject into the carrier
+     * @param format      the Format of the carrier
+     * @param carrier     the carrier for the SpanContext state. All Tracer.inject() implementations must support io.opentracing.propagation.TextMap and java.nio.ByteBuffer.
+     * @see Format
+     * @see Format.Builtin
+     */
+    public <C> void inject(SpanContext spanContext, Format<C> format, C carrier) {
+        // TODO implement
+    }
 
-        return new HashMap<String, Object>() {{
-            put(Span.TRACE_ID_NAME, Span.idToHex(sc.getContextTraceId()));
-            if (sc.getContextParentSpanId() != null) {
-                put(Span.PARENT_ID_NAME, Span.idToHex(sc.getContextParentSpanId()));
-            }
-            put(Span.SPAN_ID_NAME, Span.idToHex(sc.getContextSpanId()));
-            put(Span.SAMPLED_NAME, Span.SPAN_SAMPLED);
-        }};
+    /**
+     * Extract a SpanContext from a `carrier` of a given type, presumably after propagation across a process boundary.
+     * <p>
+     * <p>Example:
+     * <pre>{@code
+     * Tracer tracer = ...
+     * TextMap httpHeadersCarrier = new AnHttpHeaderCarrier(httpRequest);
+     * SpanContext spanCtx = tracer.extract(Format.Builtin.HTTP_HEADERS, httpHeadersCarrier);
+     * tracer.buildSpan('...').asChildOf(spanCtx).start();
+     * }</pre>
+     * <p>
+     * If the span serialized state is invalid (corrupt, wrong version, etc) inside the carrier this will result in an
+     * IllegalArgumentException.
+     *
+     * @param format  the Format of the carrier
+     * @param carrier the carrier for the SpanContext state. All Tracer.extract() implementations must support
+     *                io.opentracing.propagation.TextMap and java.nio.ByteBuffer.
+     * @return the SpanContext instance holding context to create a Span.
+     * @see Format
+     * @see Format.Builtin
+     */
+    public <C> SpanContext extract(Format<C> format, C carrier) {
+        // TODO implement
+        return null;
     }
 }
