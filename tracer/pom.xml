@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.dealer</groupId>
+        <groupId>io.opentracing.contrib</groupId>
         <artifactId>sleuth-opentracing-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
@@ -15,7 +15,7 @@
 
     <properties>
         <opentracing.version>0.20.7</opentracing.version>
-        <spring-cloud-sleuth.version>1.1.0.RELEASE</spring-cloud-sleuth.version>
+        <spring-cloud-sleuth.version>1.1.1.RELEASE</spring-cloud-sleuth.version>
     </properties>
 
     <dependencies>

@@ -1,4 +1,4 @@
-package io.opentracing.impl;
+package io.opentracing.sleuth;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
