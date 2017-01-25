@@ -9,30 +9,29 @@ import java.util.Map;
 
 public class SleuthSpan implements Span, SpanContext {
 
-    private Tracer tracer;
-
-    private org.springframework.cloud.sleuth.Span span;
-
-    static SleuthSpan create(Tracer tracer, String operationName) {
-        return new SleuthSpan(tracer, operationName);
+    static SleuthSpan wrap(org.springframework.cloud.sleuth.Span span) {
+        if (span == null) throw new NullPointerException("span == null");
+        return new SleuthSpan(span);
     }
 
-    private SleuthSpan(Tracer tracer, String operationName) {
-        this.tracer = tracer;
+    final org.springframework.cloud.sleuth.Span unwrap() {
+        return delegate;
+    }
 
-        if (tracer.getCurrentSpan() != null) {
-            this.span = this.tracer.createSpan(operationName, this.tracer.getCurrentSpan());
-        } else {
-            this.span = this.tracer.createSpan(operationName);
-        }
+    org.springframework.cloud.sleuth.Span delegate;
+    SpanContext spanContext;
+
+    private SleuthSpan(org.springframework.cloud.sleuth.Span span) {
+        this.delegate = span;
+        this.spanContext = SleuthSpanContext.wrap(span);
     }
 
     public SpanContext context() {
-        return this;
+        return spanContext;
     }
 
     public void finish() {
-        tracer.close(span);
+        delegate.stop();
     }
 
     public void finish(long finishMicros) {
@@ -45,51 +44,58 @@ public class SleuthSpan implements Span, SpanContext {
     }
 
     public SleuthSpan setTag(String key, String value) {
-        span.tag(key, value);
+        delegate.tag(key, value);
         return this;
     }
 
     public SleuthSpan setTag(String key, boolean value) {
-        return setTag(key, String.valueOf(value));
+        return setTag(key, Boolean.toString(value));
     }
 
     public SleuthSpan setTag(String key, Number value) {
-        return setTag(key, String.valueOf(value));
+        return setTag(key, value.toString());
+    }
+
+    // Helper method
+    private String fieldsToString(Map<String, ?> fields) {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, ?> field : fields.entrySet()) {
+            builder.append(String.format("%s=%s", field.getKey(), field.getValue().toString()));
+        }
+        return builder.toString();
     }
 
     public SleuthSpan log(Map<String, ?> fields) {
-        for (Map.Entry<String, ?> field : fields.entrySet()) {
-            log(String.format("%s: %s", field.getKey(), field.getValue().toString()));
-        }
-        return this;
+        if (fields.isEmpty()) return this;
+        return log(fieldsToString(fields));
     }
 
     public SleuthSpan log(long timestampMicroseconds, Map<String, ?> fields) {
-        for (Map.Entry<String, ?> field : fields.entrySet()) {
-            log(String.format("[%d] %s: %s", timestampMicroseconds, field.getKey(), field.getValue().toString()));
-        }
-        return this;
+        if (fields.isEmpty()) return this;
+        return log(timestampMicroseconds, fieldsToString(fields));
     }
 
     public SleuthSpan log(String event) {
-        span.logEvent(event);
+        delegate.logEvent(event);
         return this;
     }
 
     public SleuthSpan log(long timestampMicroseconds, String event) {
-        return log(String.format("[%d] %s", timestampMicroseconds, event));
+        delegate.logEvent(timestampMicroseconds, event);
+        return this;
     }
 
     public SleuthSpan setBaggageItem(String key, String value) {
+        delegate.setBaggageItem(key, value);
         return this;
     }
 
     public String getBaggageItem(String key) {
-        return null;
+        return delegate.getBaggageItem(key);
     }
 
     public Iterable<Map.Entry<String, String>> baggageItems() {
-        return new ArrayList<Map.Entry<String, String>>(0);
+        return delegate.baggageItems();
     }
 
     public SleuthSpan setOperationName(String operationName) {
@@ -97,23 +103,11 @@ public class SleuthSpan implements Span, SpanContext {
         return this;
     }
 
-    public SleuthSpan log(String eventName, Object payload) {
-        return log(String.format("%s: %s", eventName, payload.toString()));
+    public SleuthSpan log(String eventName, Object ignored) {
+        return log(eventName);
     }
 
-    public SleuthSpan log(long timestampMicroseconds, String eventName, Object payload) {
-        return log(String.format("[%d] %s: %s", timestampMicroseconds, eventName, payload.toString()));
-    }
-
-    public long getContextTraceId() {
-        return span.getTraceId();
-    }
-
-    public long getContextSpanId() {
-        return span.getSpanId();
-    }
-
-    public Long getContextParentSpanId() {
-        return span.getParents().size() > 0 ? span.getParents().get(0) : null;
+    public SleuthSpan log(long timestampMicroseconds, String eventName, Object ignored) {
+        return log(timestampMicroseconds, eventName);
     }
 }

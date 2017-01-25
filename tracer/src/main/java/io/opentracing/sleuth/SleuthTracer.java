@@ -3,17 +3,13 @@ package io.opentracing.sleuth;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SleuthTracer implements Tracer {
 
-    @Autowired
-    private org.springframework.cloud.sleuth.Tracer tracer;
-
     public SpanBuilder buildSpan(String operationName) {
-        return SleuthSpanBuilder.create(tracer, operationName);
+        return new SleuthSpanBuilder(operationName);
     }
 
     /**
