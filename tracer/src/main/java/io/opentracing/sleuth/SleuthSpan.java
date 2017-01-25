@@ -9,12 +9,12 @@ import java.util.Map;
 
 public class SleuthSpan implements Span, SpanContext {
 
-    static SleuthSpan wrap(org.springframework.cloud.sleuth.Span span) {
+    public static SleuthSpan wrap(org.springframework.cloud.sleuth.Span span) {
         if (span == null) throw new NullPointerException("span == null");
         return new SleuthSpan(span);
     }
 
-    final org.springframework.cloud.sleuth.Span unwrap() {
+    public final org.springframework.cloud.sleuth.Span unwrap() {
         return delegate;
     }
 
