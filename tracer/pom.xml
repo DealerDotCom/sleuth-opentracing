@@ -15,7 +15,7 @@
 
     <properties>
         <opentracing.version>0.20.7</opentracing.version>
-        <spring-cloud-sleuth.version>1.2.0.BUILD-SNAPSHOT</spring-cloud-sleuth.version>
+        <spring-cloud-sleuth.version>1.2.0.M1</spring-cloud-sleuth.version>
     </properties>
 
     <dependencies>

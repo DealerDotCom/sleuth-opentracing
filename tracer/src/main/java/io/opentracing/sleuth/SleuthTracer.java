@@ -3,10 +3,8 @@ package io.opentracing.sleuth;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SleuthTracer implements Tracer {
+public final class SleuthTracer implements Tracer {
 
     public SpanBuilder buildSpan(String operationName) {
         return new SleuthSpanBuilder(operationName);

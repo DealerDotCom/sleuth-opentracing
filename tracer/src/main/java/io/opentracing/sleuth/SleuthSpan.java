@@ -7,19 +7,19 @@ import org.springframework.cloud.sleuth.Tracer;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class SleuthSpan implements Span, SpanContext {
+public final class SleuthSpan implements Span, SpanContext {
 
     public static SleuthSpan wrap(org.springframework.cloud.sleuth.Span span) {
         if (span == null) throw new NullPointerException("span == null");
         return new SleuthSpan(span);
     }
 
-    public final org.springframework.cloud.sleuth.Span unwrap() {
+    public org.springframework.cloud.sleuth.Span unwrap() {
         return delegate;
     }
 
-    org.springframework.cloud.sleuth.Span delegate;
-    SpanContext spanContext;
+    private final org.springframework.cloud.sleuth.Span delegate;
+    private final SpanContext spanContext;
 
     private SleuthSpan(org.springframework.cloud.sleuth.Span span) {
         this.delegate = span;
@@ -36,6 +36,7 @@ public class SleuthSpan implements Span, SpanContext {
 
     public void finish(long finishMicros) {
         // TODO sleuth doesn't support setting the end time
+        log(finishMicros, "sleuth.finish(long)");
         finish();
     }
 

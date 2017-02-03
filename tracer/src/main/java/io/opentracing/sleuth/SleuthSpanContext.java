@@ -12,12 +12,12 @@ public class SleuthSpanContext implements SpanContext {
         return new SleuthSpanContext(spanContext);
     }
 
-    private SleuthSpanContext(org.springframework.cloud.sleuth.SpanContext spanContext) {
-        this.spanContext = spanContext;
+    public final org.springframework.cloud.sleuth.SpanContext unwrap() {
+        return spanContext;
     }
 
-    final org.springframework.cloud.sleuth.SpanContext unwrap() {
-        return spanContext;
+    private SleuthSpanContext(org.springframework.cloud.sleuth.SpanContext spanContext) {
+        this.spanContext = spanContext;
     }
 
     /**
