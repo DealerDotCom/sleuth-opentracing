@@ -2,12 +2,10 @@ package io.opentracing.sleuth;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
-import org.springframework.cloud.sleuth.Tracer;
 
-import java.util.ArrayList;
 import java.util.Map;
 
-public final class SleuthSpan implements Span, SpanContext {
+public final class SleuthSpan implements Span {
 
     public static SleuthSpan wrap(org.springframework.cloud.sleuth.Span span) {
         if (span == null) throw new NullPointerException("span == null");
@@ -36,7 +34,7 @@ public final class SleuthSpan implements Span, SpanContext {
 
     public void finish(long finishMicros) {
         // TODO sleuth doesn't support setting the end time
-        log(finishMicros, "sleuth.finish(long)");
+        log(finishMicros, "io.opentracing.sleuth.SleuthSpan.finish(long)");
         finish();
     }
 
