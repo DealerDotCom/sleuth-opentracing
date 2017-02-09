@@ -8,7 +8,7 @@ import java.util.Map;
 
 public final class SleuthSpan implements Span {
 
-    static SleuthSpan wrap(Tracer tracer, org.springframework.cloud.sleuth.Span span) {
+    public static SleuthSpan wrap(Tracer tracer, org.springframework.cloud.sleuth.Span span) {
         if (span == null) throw new NullPointerException("span == null");
         return new SleuthSpan(tracer, span);
     }

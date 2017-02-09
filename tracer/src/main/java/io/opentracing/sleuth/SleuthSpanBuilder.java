@@ -8,6 +8,7 @@ import org.springframework.cloud.sleuth.Span;
 import java.util.*;
 
 public class SleuthSpanBuilder implements Tracer.SpanBuilder {
+    private static final Random random = new Random();
 
     private final org.springframework.cloud.sleuth.Tracer tracer;
 
@@ -83,10 +84,17 @@ public class SleuthSpanBuilder implements Tracer.SpanBuilder {
         Span.SpanBuilder builder = Span.builder();
         builder.name(operationName).tags(tags);
 
+        Span parentSpan = null;
         for (org.springframework.cloud.sleuth.SpanContext parent : parents) {
-            if (parents instanceof Span) {
-                builder.parent(((Span) parent).getSpanId());
+            if (parent instanceof Span) {
+                parentSpan = (Span) parent;
             }
+        }
+        if (parentSpan != null) {
+            builder.parent(parentSpan.getSpanId())
+                    .traceIdHigh(parentSpan.getTraceIdHigh())
+                    .traceId(parentSpan.getTraceId())
+                    .spanId(random.nextLong());
         }
         if (timestamp != 0) {
             builder.begin(Math.round(timestamp / 1000));
