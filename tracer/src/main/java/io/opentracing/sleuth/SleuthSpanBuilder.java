@@ -10,16 +10,13 @@ import java.util.*;
 public class SleuthSpanBuilder implements Tracer.SpanBuilder {
     private static final Random random = new Random();
 
-    private final org.springframework.cloud.sleuth.Tracer tracer;
-
     private final Map<String, String> tags = new LinkedHashMap<>();
     private final List<org.springframework.cloud.sleuth.SpanContext> parents = new ArrayList<>();
 
     private String operationName;
     private long timestamp;
 
-    public SleuthSpanBuilder(org.springframework.cloud.sleuth.Tracer tracer, String operationName) {
-        this.tracer = tracer;
+    public SleuthSpanBuilder(String operationName) {
         this.operationName = operationName;
     }
 
@@ -100,7 +97,7 @@ public class SleuthSpanBuilder implements Tracer.SpanBuilder {
             builder.begin(Math.round(timestamp / 1000));
         }
 
-        return SleuthSpan.wrap(tracer, builder.build());
+        return SleuthSpan.wrap(builder.build());
     }
 
     /**

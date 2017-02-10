@@ -12,8 +12,8 @@ public class SleuthTracingConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(org.springframework.cloud.sleuth.Tracer.class)
-    public Tracer tracer(org.springframework.cloud.sleuth.Tracer tracer) {
-        return new SleuthTracer(tracer);
+    public Tracer tracer() {
+        return new SleuthTracer();
     }
 
 }

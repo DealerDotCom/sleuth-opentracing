@@ -16,14 +16,8 @@ import java.util.regex.Pattern;
 
 public final class SleuthTracer implements Tracer {
 
-    private final org.springframework.cloud.sleuth.Tracer tracer;
-
-    public SleuthTracer(org.springframework.cloud.sleuth.Tracer tracer) {
-        this.tracer = tracer;
-    }
-
     public SpanBuilder buildSpan(String operationName) {
-        return new SleuthSpanBuilder(tracer, operationName);
+        return new SleuthSpanBuilder(operationName);
     }
 
     /**

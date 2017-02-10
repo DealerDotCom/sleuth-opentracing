@@ -8,22 +8,19 @@ import java.util.Map;
 
 public final class SleuthSpan implements Span {
 
-    public static SleuthSpan wrap(Tracer tracer, org.springframework.cloud.sleuth.Span span) {
+    public static SleuthSpan wrap(org.springframework.cloud.sleuth.Span span) {
         if (span == null) throw new NullPointerException("span == null");
-        return new SleuthSpan(tracer, span);
+        return new SleuthSpan(span);
     }
 
     public org.springframework.cloud.sleuth.Span unwrap() {
         return delegate;
     }
 
-    private final Tracer tracer;
-
     private final org.springframework.cloud.sleuth.Span delegate;
     private final SpanContext spanContext;
 
-    private SleuthSpan(Tracer tracer, org.springframework.cloud.sleuth.Span span) {
-        this.tracer = tracer;
+    private SleuthSpan(org.springframework.cloud.sleuth.Span span) {
         this.delegate = span;
         this.spanContext = SleuthSpanContext.wrap(span);
     }
@@ -34,7 +31,6 @@ public final class SleuthSpan implements Span {
 
     public void finish() {
         delegate.stop();
-        tracer.close(delegate);
     }
 
     public void finish(long finishMicros) {
